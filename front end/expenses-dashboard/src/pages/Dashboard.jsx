@@ -20,13 +20,15 @@ export default function Dashboard() {
 
     const fetchExpenses = async () => {
         const params = { ...filters };
-        const response = await api.get("/api/expenses/", { params });
+        const response = await api.get("expenses/api_expenses/expense/", { params });
         setExpenses(response.data);
+
     };
 
     const fetchCategories = async () => {
-        const res = await api.get("/api/categories/");
+        const res = await api.get("expenses/api_expenses/category/");
         setCategories(res.data);
+
     };
 
     const handleEdit = (expense) => {
@@ -35,7 +37,7 @@ export default function Dashboard() {
     };
 
     const handleDelete = async (id) => {
-        await api.delete(`/api/expenses/${id}/`);
+        await api.delete(`expenses/api_expenses/expense/${id}/`);
         fetchExpenses();
     };
 

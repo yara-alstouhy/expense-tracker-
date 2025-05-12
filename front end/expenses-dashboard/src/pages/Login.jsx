@@ -30,11 +30,11 @@ export default function Login() {
                 }
             });
 
-            console.log(response);
+            console.log(response.data.token);
 
             // Save tokens to localStorage
-            localStorage.setItem("token", response.data.access);
-            localStorage.setItem("refreshToken", response.data.refresh);
+            localStorage.setItem("token", response.data.token);
+
 
             // Redirect user to the dashboard
             navigate("/dashboard");

@@ -17,14 +17,14 @@ export default function AddExpensePage() {
 
     useEffect(() => {
         const fetchCategories = async () => {
-            const res = await api.get("/api/categories/");
+            const res = await api.get("/expenses/api_expenses/category/");
             setCategories(res.data);
         };
 
         if (id) {
             setIsEditMode(true);
             const fetchExpense = async () => {
-                const res = await api.get(`/api/expenses/${id}/`);
+                const res = await api.get(`/expenses/api_expenses/create_expense/${id}/`);
                 setExpense(res.data);
             };
             fetchExpense();
@@ -37,9 +37,9 @@ export default function AddExpensePage() {
         e.preventDefault();
         try {
             if (isEditMode) {
-                await api.put(`/api/expenses/${id}/`, expense);
+                await api.put(`expenses/api_expenses/expense/${id}/`, expense);
             } else {
-                await api.post("/api/expenses/", expense);
+                await api.post("expenses/api_expenses/create_expense/", expense);
             }
             navigate("/");
         } catch (error) {
@@ -48,7 +48,7 @@ export default function AddExpensePage() {
     };
 
     return (
-        <div className="p-4 bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100">
+        <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">{isEditMode ? "Edit Expense" : "Add New Expense"}</h1>
 
             <form onSubmit={handleSubmit} className="space-y-4">

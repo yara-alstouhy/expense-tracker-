@@ -1,53 +1,45 @@
 import { useState } from "react";
-import api  from "../services/api.js";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 export default function Register() {
-    const [fullName, setFullName] = useState("");
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [errorMessage, setErrorMessage] = useState(""); // To handle error messages
-    const [successMessage, setSuccessMessage] = useState(""); // To handle success messages
-    const fetchCSRFToken = async () => {
-        const response = await api.get('/accounts/api_account/get-csrf-token/');
-        return response.data.csrfToken;
+    const [formData, setFormData] = useState({
+        full_name: "",
+        username: "",
+        email: "",
+        password: "",
+    });
+
+    const [errorMessage, setErrorMessage] = useState("");
+    const [successMessage, setSuccessMessage] = useState("");
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
+
     const handleRegister = async (e) => {
         e.preventDefault();
-        const csrfToken = await fetchCSRFToken();
+        setErrorMessage("");
+        setSuccessMessage("");
+
         try {
-            // Send the register request to Django API
-            const response = await api.post('/accounts/api_account/register/', {
-                full_name: fullName,
-                username: username,
-                email: email,
-                password: password,
-            }, {
-                headers: {
-                    'X-CSRFToken': csrfToken  // Attach CSRF Token
-                }
-            });
+            // Fetch CSRF token before POST request
+            await api.get('/accounts/api_account/get-csrf-token/');
 
-            // If registration is successful, handle the success response
+            const response = await api.post('/accounts/api_account/register/', formData);
+
+            // Save JWT token to localStorage
+            if (response.data.token) {
+                localStorage.setItem("token", response.data.token);
+            }
+
             setSuccessMessage("Registration successful!");
-            setErrorMessage(""); // Clear any previous error messages
-            // Save tokens to localStorage
-            localStorage.setItem("token", response.data.access);
-            localStorage.setItem("refreshToken", response.data.refresh);
-
-            // Redirect user to the dashboard
             navigate("/dashboard");
         } catch (error) {
-            // If an error occurs (like validation failure), handle the error response
-            if (error.response) {
-                // If the error comes from the backend
-                setErrorMessage(error.response.data.error || "An error occurred during registration.");
-            } else {
-                // If there's an issue with the request (e.g., network error)
-                setErrorMessage("Network error. Please try again later.");
-            }
-            setSuccessMessage(""); // Clear any success messages
-            console.error("Registration failed:", error);
+            const errMsg = error.response?.data?.error || "Registration failed.";
+            setErrorMessage(errMsg);
         }
     };
 
@@ -56,55 +48,23 @@ export default function Register() {
             <div className="w-full max-w-sm p-8 bg-white rounded-xl shadow">
                 <h2 className="text-2xl font-bold mb-6 text-center">Create Account</h2>
 
-                {/* Display success or error message */}
-                {successMessage && (
-                    <div className="bg-green-500 text-white p-2 rounded mb-4">{successMessage}</div>
-                )}
-                {errorMessage && (
-                    <div className="bg-red-500 text-white p-2 rounded mb-4">{errorMessage}</div>
-                )}
+                {successMessage && <div className="bg-green-500 text-white p-2 rounded mb-4">{successMessage}</div>}
+                {errorMessage && <div className="bg-red-500 text-white p-2 rounded mb-4">{errorMessage}</div>}
 
                 <form onSubmit={handleRegister}>
-                    <div className="mb-4">
-                        <label className="block mb-1 text-gray-700">Full Name</label>
-                        <input
-                            type="text"
-                            className="w-full p-2 border rounded"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block mb-1 text-gray-700">Username</label>
-                        <input
-                            type="text"
-                            className="w-full p-2 border rounded"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block mb-1 text-gray-700">Email</label>
-                        <input
-                            type="email"
-                            className="w-full p-2 border rounded"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block mb-1 text-gray-700">Password</label>
-                        <input
-                            type="password"
-                            className="w-full p-2 border rounded"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
+                    {["full_name", "username", "email", "password"].map((field) => (
+                        <div key={field} className="mb-4">
+                            <label className="block mb-1 text-gray-700 capitalize">{field.replace("_", " ")}</label>
+                            <input
+                                type={field === "password" ? "password" : field === "email" ? "email" : "text"}
+                                name={field}
+                                value={formData[field]}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-2 border rounded"
+                            />
+                        </div>
+                    ))}
                     <button
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"

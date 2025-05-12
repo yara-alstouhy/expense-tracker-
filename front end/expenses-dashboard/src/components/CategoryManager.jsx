@@ -13,20 +13,20 @@ export default function CategoryManager({ onClose, onCategoryUpdated }) {
     }, []);
 
     const fetchCategories = async () => {
-        const res = await api.get("/api/categories/");
+        const res = await api.get("/expenses/api_expenses/category/");
         setCategories(res.data);
     };
 
     const handleAdd = async () => {
         if (!newCategory.trim()) return;
-        await api.post("/api/categories/", { name: newCategory });
+        await api.post("/expenses/api_expenses/category/", { name: newCategory });
         setNewCategory("");
         fetchCategories();
         onCategoryUpdated(); // notify parent
     };
 
     const handleDelete = async (id) => {
-        await api.delete(`/api/categories/${id}/`);
+        await api.delete(`/expenses/api_expenses/category/${id}/`);
         fetchCategories();
         onCategoryUpdated();
     };
@@ -37,7 +37,7 @@ export default function CategoryManager({ onClose, onCategoryUpdated }) {
     };
 
     const handleSaveEdit = async () => {
-        await api.put(`/api/categories/${editingId}/`, { name: editingName });
+        await api.put(`/expenses/api_expenses/category/${editingId}/`, { name: editingName });
         setEditingId(null);
         setEditingName("");
         fetchCategories();

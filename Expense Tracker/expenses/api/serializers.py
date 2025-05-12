@@ -22,10 +22,12 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ExpenseSerializer(serializers.ModelSerializer):
+    category_name = serializers.ReadOnlyField(source='category.name')
+
     class Meta:
         model = Expense
-        fields = ['id', 'category', 'amount', 'date', 'user', 'description']
-        read_only_fields = ['user']
+        fields = ['id', 'category', 'amount', 'date', 'category_name', 'user', 'description']
+        read_only_fields = ['user', 'category_name']
 
     def create(self, validated_data):
         user = self.context.get('user')

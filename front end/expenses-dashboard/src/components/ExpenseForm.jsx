@@ -30,9 +30,9 @@ export default function ExpenseForm({ onClose, onSave, categories, expense, open
 
         try {
             if (expense) {
-                await api.put(`/api/expenses/${expense.id}/`, formData);
+                await api.put(`/expenses/api_expenses/expense/${expense.id}/`, formData);
             } else {
-                await api.post(`/api/expenses/`, formData);
+                await api.post(`/expenses/api_expenses/create_expense/`, formData);
             }
 
             onSave();
@@ -42,7 +42,7 @@ export default function ExpenseForm({ onClose, onSave, categories, expense, open
     };
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100  z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 z-50">
             <div className="bg-white w-full max-w-md p-6 rounded shadow-lg relative">
                 <h2 className="text-xl font-bold mb-4">
                     {expense ? "Edit Expense" : "Add New Expense"}

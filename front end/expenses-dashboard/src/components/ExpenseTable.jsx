@@ -1,4 +1,4 @@
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa"; // npm install react-icons
 
 export default function ExpenseTable({ expenses, onEdit, onDelete }) {
     return (
