@@ -1,0 +1,17 @@
+*.log
+*.pot
+*.pyc
+__pycache__
+.db.sqlite3
+.my_env
+/my_env/
+**/migrations/
+/accounts/migrations/
+/accounts/migrations/__pycache__/
+/expenses/migrations/
+/expenses/migrations/__pycache__/
+.Pipfile.lock
+.Pipfile
+Pipfile
+Pipfile.lock
+db.sqlite3
